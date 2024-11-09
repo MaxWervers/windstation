@@ -5,11 +5,18 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import time
 
+# options = Options()
+# options.add_argument('--headless')
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
 options = Options()
 options.add_argument('--headless')
-#options.add_experimental_option('detach', True)
+options.add_argument('--no-sandbox')  # Helps with limited resources
+options.add_argument('--disable-dev-shm-usage')  # Helps with limited resources
+options.add_argument('--disable-gpu')  # Disable GPU for headless operation
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+# Use the installed Chromium and chromedriver
+driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver', options=options)
 
 try:
     # Open the Windguru page
