@@ -5,7 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 import time
 
-from functions import Get_Current_Data
+from functions import *
 
 options = Options()
 options.add_argument("--headless")
@@ -27,23 +27,38 @@ try:
     # Allow time for the page to load
     time.sleep(5)  # Adjust sleep time as needed or use WebDriverWait for more control
 
-    while True:
+    # Counter to track 10-minute intervals
+    counter = 0
+    windguru_interval = 30  # Every 30 seconds
+    watertemp_interval = 600  # Every 10 minutes (600 seconds)
 
-        # Get the current data
+    while True:
+        # Update Windguru data every 30 seconds
         (
             current_wind_speed,
             current_wind_gust_speed,
             current_wind_direction,
             current_temperature,
-        ) = Get_Current_Data(driver)
+        ) = get_current_WG_data(driver)
+
+        # Update water temperature every 10 minutes
+        if counter % (watertemp_interval // windguru_interval) == 0:
+            current_watertemp = get_current_watertemp(
+                location="Brouwershavense Gat 8 (b)"
+            )
 
         print(f"Wind speed: {current_wind_speed} knots")
         print(f"Wind gust speed: {current_wind_gust_speed} knots")
         print(f"Wind direction: {current_wind_direction}")
         print(f"Temperature: {current_temperature}°C")
-        time.sleep(60)
+        print(f"Water temperature: {current_watertemp}°C")
+
+        # Wait for the next Windguru update interval
+        time.sleep(windguru_interval)
+        counter += 1
 
 
 finally:
     # Close the driver
     driver.quit()
+
