@@ -8,18 +8,16 @@ from datetime import datetime
 
 from functions import *
 
-options = Options()
-options.add_argument("--headless")
-driver = webdriver.Chrome(
-    service=Service(ChromeDriverManager().install()), options=options
-)
-
 # options = Options()
-# options.add_argument('--headless')
-# options.add_argument('--no-sandbox')  # Helps with limited resources
-# options.add_argument('--disable-dev-shm-usage')  # Helps with limited resources
-# options.add_argument('--disable-gpu')  # Disable GPU for headless operation
-# driver = webdriver.Chrome(executable_path='/usr/bin/chromedriver', options=options)
+# options.add_argument("--headless")
+# driver = webdriver.Chrome(
+#     service=Service(ChromeDriverManager().install()), options=options
+#)
+
+options = Options()
+options.add_argument('--headless')
+service = Service('/usr/bin/chromedriver')
+driver = webdriver.Chrome(service=service, options=options)
 
 # Extract tide data for a specific date (or today)
 target_date = datetime.now().strftime('%Y%m%d')
@@ -55,12 +53,14 @@ try:
                 current_wind_direction,
                 current_temperature,
             ) = get_current_WG_data(driver)
+            last_windguru_update = current_time
 
         # Update water temperature every 10 minutes
         if current_time - last_watertemp_update >= watertemp_interval:
             current_watertemp = get_current_watertemp(
                 location="Brouwershavense Gat 8 (b)"
             )
+            last_watertemp_update = current_time
 
         print(f"Wind speed: {current_wind_speed} knots")
         print(f"Wind gust speed: {current_wind_gust_speed} knots")
@@ -68,8 +68,6 @@ try:
         print(f"Temperature: {current_temperature}°C")
         print(f"Water temperature: {current_watertemp}°C")
         
-        last_windguru_update = current_time
-        last_watertemp_update = current_time
 
         # Brief sleep to prevent CPU overload
         time.sleep(5)
