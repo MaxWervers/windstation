@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 
 # Load the data
-file_path = 'Waterhoogte Astronomisch t.o.v. NAP Brouwershavensche Gat 08.csv'
+file_path = 'TideVisuals\TidesGAT8.csv'
 data = pd.read_csv(file_path, delimiter=';', parse_dates=[['Datum', 'Tijd (NL tijd)']], dayfirst=True)
 
 # Rename columns for easier access
@@ -13,7 +13,7 @@ data['Waterhoogte'] = pd.to_numeric(data['Waterhoogte'], errors='coerce')
 data.set_index('Datetime', inplace=True)
 
 # Filter data for a specific day
-specific_day = '2024-11-16'
+specific_day = '2024-11-30'
 day_data = data.loc[specific_day]
 
 # Find the min and max water levels for color scaling
@@ -40,3 +40,4 @@ plt.ylabel('Waterhoogte (cm)')
 plt.title(f'Water Level Gradient for {specific_day} (Green=Low, Red=High)')
 plt.grid()
 plt.show()
+
