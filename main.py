@@ -12,7 +12,7 @@ from functions import *
 # options.add_argument("--headless")
 # driver = webdriver.Chrome(
 #     service=Service(ChromeDriverManager().install()), options=options
-#)
+# )
 
 options = Options()
 options.add_argument('--headless')
