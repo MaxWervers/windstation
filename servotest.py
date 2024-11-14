@@ -1,49 +1,46 @@
-# servo_test.py
-
+# Import libraries
 import RPi.GPIO as GPIO
 import time
 
-# Set the GPIO mode
-GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
-GPIO.setwarnings(False)
+# Set GPIO numbering mode
+GPIO.setmode(GPIO.BOARD)
 
-# Define the GPIO pin connected to the servo control
-SERVO_PIN = 10  # Replace with your chosen GPIO pin (e.g., GPIO17)
+# Set pin 11 as an output, and set servo1 as pin 11 as PWM
+GPIO.setup(11,GPIO.OUT)
+servo1 = GPIO.PWM(11,50) # Note 11 is pin, 50 = 50Hz pulse
 
-# Set up the GPIO pin for PWM at 50Hz
-GPIO.setup(SERVO_PIN, GPIO.OUT)
-pwm = GPIO.PWM(SERVO_PIN, 50)  # 50Hz frequency for the SG90
+#start PWM running, but with value of 0 (pulse off)
+servo1.start(0)
+print ("Waiting for 2 seconds")
+time.sleep(2)
 
-# Function to set servo angle
-def set_angle(angle):
-    # Convert the angle to duty cycle (0°=2.5%, 180°=12.5%)
-    duty_cycle = 2.5 + (angle / 180.0) * 10
-    pwm.ChangeDutyCycle(duty_cycle)
+#Let's move the servo!
+print ("Rotating 180 degrees in 10 steps")
 
-# Initialize PWM
-pwm.start(0)
+# Define variable duty
+duty = 2.5
 
-try:
-    # Test servo at different angles
-    print("Moving servo to 0°")
-    set_angle(0)
-    time.sleep(1)  # Wait for the servo to reach the position
-
-    print("Moving servo to 90°")
-    set_angle(90)
+# Loop for duty values from 2 to 12 (0 to 180 degrees)
+while duty <= 12.5:
+    servo1.ChangeDutyCycle(duty)
     time.sleep(1)
+    duty = duty + 1
 
-    print("Moving servo to 180°")
-    set_angle(180)
-    time.sleep(1)
+# Wait a couple of seconds
+time.sleep(2)
 
-    # Return to 90° position before stopping
-    print("Returning servo to 90°")
-    set_angle(90)
-    time.sleep(1)
+# Turn back to 90 degrees
+print ("Turning back to 90 degrees for 2 seconds")
+servo1.ChangeDutyCycle(7)
+time.sleep(2)
 
-finally:
-    # Clean up the GPIO and PWM
-    pwm.stop()
-    GPIO.cleanup()
-    print("Test completed and GPIO cleaned up.")
+#turn back to 0 degrees
+print ("Turning back to 0 degrees")
+servo1.ChangeDutyCycle(2)
+time.sleep(0.5)
+servo1.ChangeDutyCycle(0)
+
+#Clean things up at the end
+servo1.stop()
+GPIO.cleanup()
+print ("Goodbye")
